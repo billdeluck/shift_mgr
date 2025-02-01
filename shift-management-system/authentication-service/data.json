@@ -1,4 +1,11 @@
 {
-    "users": []
-  }
-  
+  "users": [
+    {
+      "id": 1,
+      "fullName": "John Doe",
+      "email": "john@example.com",
+      "password": "$2b$10$qMbShJmHAJNJ3okZ.5d7t.lfNE7UhZBu/IpD.eH4kv8QvOiGtAdXO",
+      "role": "employee"
+    }
+  ]
+}
