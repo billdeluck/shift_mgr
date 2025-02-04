@@ -1,1 +1,18 @@
-{}
+{
+  "users": [
+    {
+      "id": 1,
+      "fullName": "John supersecurekey",
+      "email": "supersecurekey@example.com",
+      "password": "$2b$10$eYD11xvR.YbOqJwDzhs0IevWD3PPu07ruxkRkLjB5NDR8RbR5pkNC",
+      "role": "employee"
+    },
+    {
+      "id": 2,
+      "fullName": "De Bill",
+      "email": "admin@example.com",
+      "password": "$2b$10$iKKw1s79rLK1ORfDNp4A7eWIGB7C/MpLvVkwPYo8v/8tm6cs1RZWK",
+      "role": "admin"
+    }
+  ]
+}

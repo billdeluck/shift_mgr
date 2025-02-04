@@ -3,13 +3,17 @@ import path from "path";
 
 const __dirname = path.resolve();
 const dataFilePath = path.join(__dirname, "data.json");
-let db = {};
+let db = { users: [] };  // ✅ Ensure `users` array is initialized
 
 // ✅ Load data from `data.json`
 export async function loadData() {
   try {
     const fileData = await fs.readFile(dataFilePath, "utf-8");
     db = JSON.parse(fileData);
+
+    // ✅ Ensure `users` array exists
+    if (!db.users) db.users = [];
+
     console.log("✅ data.json loaded");
   } catch (error) {
     if (error.code === "ENOENT") {
