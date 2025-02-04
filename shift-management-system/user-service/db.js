@@ -5,6 +5,7 @@ const __dirname = path.resolve();
 const dataFilePath = path.join(__dirname, "data.json");
 let db = {};
 
+// ✅ Load data from `data.json`
 export async function loadData() {
   try {
     const fileData = await fs.readFile(dataFilePath, "utf-8");
@@ -21,6 +22,7 @@ export async function loadData() {
   }
 }
 
+// ✅ Save data to `data.json`
 export async function saveData() {
   try {
     await fs.writeFile(dataFilePath, JSON.stringify(db, null, 2), "utf-8");
@@ -30,12 +32,15 @@ export async function saveData() {
   }
 }
 
+// ✅ Get current database object
 export function getDb() {
   return db;
 }
 
+// ✅ Update database object
 export function setDb(newDb) {
   db = newDb;
 }
 
+// Load data when the module is imported
 await loadData();

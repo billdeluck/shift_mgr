@@ -1,4 +1,30 @@
-import express from 'express';
+import express from "express";
+import {
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from "../controllers/userController.js";
+import { authenticate } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+// ✅ Get all users (Protected)
+router.get("/", authenticate, getAllUsers);
+
+// ✅ Get user by ID (Protected)
+router.get("/:id", authenticate, getUserById);
+
+// ✅ Update user details (Protected)
+router.put("/:id", authenticate, updateUser);
+
+// ✅ Delete user (Protected)
+router.delete("/:id", authenticate, deleteUser);
+
+export default router;
+
+
+/*import express from 'express';
 import { getAllUsers, getUserById, createUser } from '../controllers/userController.js';
 import { authenticate } from '../../common/middleware/authMiddleware.js';
 import { body, param } from 'express-validator';
@@ -14,3 +40,4 @@ router.post('/', authenticate, [
  ], createUser)
 
  export default router;
+ */
