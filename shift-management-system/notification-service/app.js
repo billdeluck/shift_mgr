@@ -1,19 +1,22 @@
 // notification-service/app.js
 import express from "express";
 import cors from "cors";
- import notificationRoutes from "./routes/notificationRoutes.js";
+import dotenv from "dotenv";
+import notificationRoutes from "./routes/notificationRoutes.js";
+
+dotenv.config();
 
 const app = express();
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/notifications", notificationRoutes);
+app.use("/api/notifications", notificationRoutes);
 
-// Start server
-const PORT = process.env.PORT || 3006;
-app.listen(PORT, () =>
-  console.log(`Notification Service running on port ${PORT}`)
-);
+app.get("/", (req, res) => {
+  res.send("Notification Service is Running!");
+});
+
+const PORT = process.env.PORT || 3005; // Use 3005 as specified
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Notification Service running on port ${PORT}`);
+});

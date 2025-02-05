@@ -1,53 +1,44 @@
 // notification-service/models/Notification.js
-import dbModule from '../db.js';
-const { getDb, setDb } = dbModule;
+import { getDb, setDb, saveData } from "../db.js";
 
-    class Notification {
-         constructor(message, userId, sentAt, status) {
-            this.id = this.generateId();
-          this.message = message;
-         this.userId = userId;
-           this.sentAt = sentAt;
-           this.status = status;
-          }
-        generateId() {
-           const db = getDb();
-           const notifications = db.notifications || [];
-             if (notifications.length === 0) {
-                 return 1;
-              }
-           const maxId = Math.max(...notifications.map((notification) => notification.id));
-             return maxId + 1;
-        }
+class Notification {
+  constructor(message, userId, type = "email", status = "pending") {
+    this.id = this.generateId();
+    this.message = message;
+    this.userId = userId;
+    this.type = type; // email, sms (future-proofing)
+    this.status = status;
+    this.sentAt = new Date();
+  }
 
-     static async create(notification) {
-       const db = getDb();
-       const notifications = db.notifications || [];
-       const newNotification = new Notification(notification.message, notification.userId, notification.sentAt, notification.status);
-        notifications.push(newNotification);
-        setDb({ notifications });
-        return newNotification;
-        }
-       static async findOne(condition){
-         const db = getDb();
-         const notifications = db.notifications || [];
-         return notifications.find(notification => {
-          for (const key in condition){
-              if(notification[key] !== condition[key]){
-                return false;
-               }
-            }
-            return true
-          });
-         }
-          static async findAll() {
-          const db = getDb();
-          return db.notifications || [];
-         }
-      static async findById(id) {
-        const db = getDb();
-           const notifications = db.notifications || [];
-            return notifications.find(notification => notification.id === parseInt(id));
-          }
-   }
-    export default Notification;
+  generateId() {
+    const db = getDb();
+    const notifications = db.notifications || [];
+    return notifications.length === 0 ? 1 : Math.max(...notifications.map(n => n.id)) + 1;
+  }
+
+  static async create(notificationData) {
+    const db = getDb();
+    const newNotification = new Notification(
+      notificationData.message,
+      notificationData.userId,
+      notificationData.type,
+      notificationData.status
+    );
+
+    db.notifications.push(newNotification);
+    setDb(db); // Update the in-memory db object.
+    await saveData(); // Persist to disk.
+    return newNotification;
+  }
+
+  static async findAll() {
+    return getDb().notifications || [];
+  }
+
+  static async findById(id) {
+    return getDb().notifications.find(notification => notification.id === parseInt(id));
+  }
+}
+
+export default Notification;
