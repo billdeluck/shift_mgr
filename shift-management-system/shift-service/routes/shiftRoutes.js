@@ -1,4 +1,35 @@
 // shift-service/routes/shiftRoutes.js
+import express from "express";
+import {
+  getAllShifts,
+  getShiftById,
+  createShift,
+  updateShift,
+  deleteShift,
+} from "../controllers/shiftController.js";
+import { authenticate, authorize } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+// Get all shifts (requires authentication)
+router.get("/", authenticate, getAllShifts);
+
+// Get shift by ID (requires authentication)
+router.get("/:id", authenticate, getShiftById);
+
+// Create a new shift (requires authentication and 'admin' role)
+router.post("/", authenticate, authorize(['admin', 'manager']), createShift);
+
+// Update shift (requires authentication)
+router.put("/:id", authenticate, updateShift);
+
+// Delete shift (requires authentication and 'admin' role)
+router.delete("/:id", authenticate, authorize(['admin', 'manager']), deleteShift);
+
+export default router;
+
+/*
+// shift-service/routes/shiftRoutes.js
 import express from 'express';
 import { getAllShifts, getShiftById, createShift, swapShift } from '../controllers/shiftController.js';
   import { authenticate } from '../middleware/authMiddleware.js';
@@ -21,3 +52,4 @@ router.post('/swap', authenticate,[
 ] ,swapShift);
 
 export default router
+*/

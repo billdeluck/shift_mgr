@@ -1,44 +1,46 @@
- // shift-service/db.js
- import { promises as fs } from 'fs';
- import path from 'path';
+import { promises as fs } from "fs";
+import path from "path";
 
- const __dirname = path.resolve();
- const dataFilePath = path.join(__dirname, 'data.json');
- let db = {};
+const __dirname = path.resolve();
+const dataFilePath = path.join(__dirname, "data.json");
+let db = {};
 
- async function loadData() {
-     try {
-         const fileData = await fs.readFile(dataFilePath, "utf-8");
-         db = JSON.parse(fileData);
-         console.log('data.json loaded');
-     } catch (error) {
-         if (error.code === 'ENOENT') {
-             console.log('data.json does not exist. Initialising with empty JSON.');
-             db = { shifts: [] };
-             await saveData();
-         } else {
-             console.log(`error reading json: ${error}`);
-         }
-     }
- }
+// ✅ Load data from `data.json`
+export async function loadData() {
+  try {
+    const fileData = await fs.readFile(dataFilePath, "utf-8");
+    db = JSON.parse(fileData);
+    console.log("✅ data.json loaded");
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.log("⚠️ data.json not found. Initializing...");
+      db = { users: [] };
+      await saveData();
+    } else {
+      console.error("❌ Error reading data.json:", error);
+    }
+  }
+}
 
- async function saveData() {
-     try {
-         await fs.writeFile(dataFilePath, JSON.stringify(db, null, 2), "utf-8");
-         console.log('data.json saved');
-     } catch (error) {
-         console.log(`error saving json: ${error}`);
-     }
- }
+// ✅ Save data to `data.json`
+export async function saveData() {
+  try {
+    await fs.writeFile(dataFilePath, JSON.stringify(db, null, 2), "utf-8");
+    console.log("✅ data.json saved");
+  } catch (error) {
+    console.error("❌ Error saving data.json:", error);
+  }
+}
 
- const dbModule = {
-     getDb: () => db,
-     setDb: (newDb) => {
-         db = newDb;
-         saveData();
-     }
- };
+// ✅ Get current database object
+export function getDb() {
+  return db;
+}
 
- loadData();
+// ✅ Update database object
+export function setDb(newDb) {
+  db = newDb;
+}
 
- export default dbModule;
+// Load data when the module is imported
+await loadData();

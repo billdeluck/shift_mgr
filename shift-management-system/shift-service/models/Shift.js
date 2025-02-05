@@ -1,4 +1,15 @@
 // shift-service/models/Shift.js
+export default class Shift {
+  constructor(id, userId, date, timeIn, timeOut) {
+    this.id = id;
+    this.userId = userId;
+    this.date = date;
+    this.timeIn = timeIn;
+    this.timeOut = timeOut;
+  }
+}
+/*
+// shift-service/models/Shift.js
 import dbModule from '../db.js';
 const { getDb, setDb } = dbModule;
   class Shift {
@@ -51,4 +62,4 @@ const { getDb, setDb } = dbModule;
        return shifts.find(shift => shift.id === parseInt(id));
    }
  }
-export default Shift;
+export default Shift;*/
