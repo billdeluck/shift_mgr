@@ -1,19 +1,27 @@
 // report-service/routes/reportRoutes.js
-import express from 'express';
-import { getAllReports, getReportById, createReport } from '../controllers/reportController.js';
-import { authenticate } from '../middleware/authMiddleware.js';
- import { body, param } from 'express-validator';
+import express from "express";
+import { generateReport, getAllReports, getReportsById } from "../controllers/reportController.js";
+import { authenticate } from "../middleware/authMiddleware.js";
+import { body, param } from "express-validator";
+
 const router = express.Router();
 
-router.get('/', authenticate, getAllReports);
-router.get('/:id', authenticate, [
-    param('id').isInt().withMessage('Report id should be an integer')
-], getReportById);
-router.post('/', authenticate, [
-    body('reportType').notEmpty().withMessage('Report Type is required'),
-     body('generatedAt').notEmpty().withMessage('Generated at time is required'),
-     body('data').notEmpty().withMessage('Data is Required')
-], createReport);
+// Define report validation requirements
+const reportValidationRules = [
+    body("reportType")
+        .notEmpty().withMessage("Report type is required")
+        .isIn(["shiftEvents", "users", "shifts"]).withMessage("Invalid report type"),
+    body("startDate").notEmpty().withMessage("Start date is required").isISO8601().withMessage("Invalid start date format"),
+    body("endDate").notEmpty().withMessage("End date is required").isISO8601().withMessage("Invalid end date format"),
+    body("userId").optional().isInt().withMessage("User ID must be an integer"),
+    body("format")
+        .notEmpty().withMessage("Report format is required")
+        .isIn(["json", "csv", "pdf"]).withMessage("Invalid report format"),
+];
 
+// Routes
+router.post("/", authenticate, reportValidationRules, generateReport);
+router.get("/", authenticate, getAllReports);
+router.get("/:id", authenticate, param("id").isInt().withMessage("Report ID must be an integer"), getReportsById);
 
 export default router;

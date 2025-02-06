@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login } from "../controllers/authController.js";
+import { register, login, updateUser, deleteUser } from "../controllers/authController.js";
 import { body } from "express-validator";
 
 const router = express.Router();
@@ -14,5 +14,10 @@ router.post(
   register
 );
 router.post("/login", login);
+   // ✅ Update user (Called by user-service)
+router.put("/update/:id", updateUser);
+
+// ✅ Delete user (Called by user-service)
+router.delete("/delete/:id", deleteUser);
 
 export default router;

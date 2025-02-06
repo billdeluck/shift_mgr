@@ -1,19 +1,22 @@
 // report-service/app.js
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import reportRoutes from "./routes/reportRoutes.js";
 
-const app = express();
+dotenv.config();
 
-// Middleware
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/reports", reportRoutes);
+app.use("/api/reports", reportRoutes);
 
-// Start server
-const PORT = process.env.PORT || 3004;
-app.listen(PORT, () =>
-  console.log(`Report Service running on port ${PORT}`)
-);
+app.get("/", (req, res) => {
+    res.send("Report Service is Running!");
+});
+
+const PORT = process.env.PORT || 3004; // Use a different port
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`✅ Report Service running on port ${PORT}`);
+});

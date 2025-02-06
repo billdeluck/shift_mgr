@@ -1,14 +1,3 @@
 {
-  "events": [
-    {
-      "id": 1,
-      "type": "USER_CREATED",
-      "userId": 3,
-      "shiftId": null,
-      "data": {
-        "username": "testuser"
-      },
-      "timestamp": "2025-02-05T21:08:15.874Z"
-    }
-  ]
+  "events": []
 }

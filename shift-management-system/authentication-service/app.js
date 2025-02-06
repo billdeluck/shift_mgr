@@ -11,7 +11,7 @@ app.use(express.json()); // Ensure JSON body parsing
 app.use(express.urlencoded({ extended: true })); // Ensure URL-encoded body parsing
 
 // ✅ Register authentication routes correctly
-app.use("/api/auth", authRoutes);  
+app.use("/api/auth", authRoutes);
 
 // ✅ Health check route
 app.get("/", (req, res) => {

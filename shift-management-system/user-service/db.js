@@ -1,3 +1,4 @@
+// user-service/db.js
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -10,7 +11,11 @@ export async function loadData() {
   try {
     const fileData = await fs.readFile(dataFilePath, "utf-8");
     db = JSON.parse(fileData);
-    console.log("✅ data.json loaded");
+
+    if (!db.users) {
+      db.users = [];
+    }
+    console.log("✅ data.json loaded with users:", db.users);
   } catch (error) {
     if (error.code === "ENOENT") {
       console.log("⚠️ data.json not found. Initializing...");
