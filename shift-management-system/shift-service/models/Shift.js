@@ -1,65 +1,98 @@
 // shift-service/models/Shift.js
 export default class Shift {
-  constructor(id, userId, date, timeIn, timeOut) {
-    this.id = id;
-    this.userId = userId;
-    this.date = date;
-    this.timeIn = timeIn;
-    this.timeOut = timeOut;
+  constructor(id, userId, date, timeIn, timeOut, status = "scheduled") {
+      this.id = id;
+      this.userId = userId;
+      this.date = date;
+      this.timeIn = timeIn;
+      this.timeOut = timeOut;
+      this.status = status; // scheduled, swapped, cancelled, completed
   }
 }
+
 /*
+
 // shift-service/models/Shift.js
-import dbModule from '../db.js';
-const { getDb, setDb } = dbModule;
-  class Shift {
-       constructor(userId, date, timeIn, timeOut, status = "scheduled") {
-        this.id = this.generateId();
+import { getDb, setDb, saveData } from "../db.js";
+
+class Shift {
+    constructor(id, userId, date, timeIn, timeOut, status = "scheduled") {
+        this.id = id;
         this.userId = userId;
         this.date = date;
         this.timeIn = timeIn;
         this.timeOut = timeOut;
-        this.status = status
-      }
-       generateId() {
-         const db = getDb();
-          const shifts = db.shifts || [];
-          if (shifts.length === 0) {
-             return 1;
-            }
-         const maxId = Math.max(...shifts.map((shift) => shift.id));
-         return maxId + 1;
-     }
+        this.status = status;
+    }
 
-      static async create(shift) {
-      const db = getDb();
+    static async create(shiftData) {
+        const db = getDb();
         const shifts = db.shifts || [];
-         const newShift = new Shift(shift.userId, shift.date, shift.timeIn, shift.timeOut, shift.status);
-       shifts.push(newShift);
+
+        // Check for shift overlap (customize this logic as needed)
+        const existingOverlap = shifts.some((shift) => {
+            const newShiftDate = new Date(shiftData.date);
+            const existingShiftDate = new Date(shift.date);
+            return (
+                newShiftDate.getTime() === existingShiftDate.getTime() &&
+                shift.userId === shiftData.userId &&
+                (
+                    (newShiftDate.getTime() >= new Date(shift.timeIn).getTime() && newShiftDate.getTime() < new Date(shift.timeOut).getTime()) ||
+                    (new Date(shiftData.timeOut).getTime() > new Date(shift.timeIn).getTime() && new Date(shiftData.timeOut).getTime() <= new Date(shift.timeOut).getTime())
+                )
+            )
+        });
+        if (existingOverlap) {
+            throw new Error("Shift overlaps with an existing shift for this user.");
+        }
+
+        const newShift = new Shift(
+            shifts.length ? Math.max(...shifts.map((s) => s.id)) + 1 : 1,
+            shiftData.userId,
+            shiftData.date,
+            shiftData.timeIn,
+            shiftData.timeOut,
+            shiftData.status
+        );
+        shifts.push(newShift);
         setDb({ shifts });
-      return newShift;
+        await saveData();
+        return newShift;
     }
 
-    static async findOne(condition){
-      const db = getDb();
-         const shifts = db.shifts || [];
-       return shifts.find(shift => {
-            for (const key in condition){
-              if(shift[key] !== condition[key]){
-                  return false;
-                }
-             }
-          return true
-     });
-    }
     static async findAll() {
-    const db = getDb();
-    return db.shifts || [];
-   }
-   static async findById(id) {
-     const db = getDb();
-     const shifts = db.shifts || [];
-       return shifts.find(shift => shift.id === parseInt(id));
-   }
- }
-export default Shift;*/
+        return getDb().shifts || [];
+    }
+
+    static async findById(id) {
+        const shifts = getDb().shifts || [];
+        return shifts.find((shift) => shift.id === parseInt(id));
+    }
+
+    static async update(id, updatedData) {
+        const db = getDb();
+        const index = db.shifts.findIndex((shift) => shift.id === parseInt(id));
+        if (index === -1) {
+            return null;
+        }
+        db.shifts[index] = { ...db.shifts[index], ...updatedData };
+        setDb(db);
+        await saveData();
+        return db.shifts[index];
+    }
+
+    static async delete(id) {
+        const db = getDb();
+        const index = db.shifts.findIndex((shift) => shift.id === parseInt(id));
+        if (index === -1) {
+            return false;
+        }
+        db.shifts.splice(index, 1);
+        setDb(db);
+        await saveData();
+        return true;
+    }
+}
+
+export default Shift;
+*/
