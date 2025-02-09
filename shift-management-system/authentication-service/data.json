@@ -2,9 +2,16 @@
   "users": [
     {
       "id": 1,
-      "fullName": "Luckson Tester",
-      "email": "luckson@gmail.com",
-      "password": "$2b$10$C/HsSswQuaB8RbawTAv5qeO.9gusoMCVBZXT/nVQnjGoDsZTbcK8a",
+      "fullName": "John Doe",
+      "email": "john@example.com",
+      "password": "$2b$10$nOo/8GmodUXJp9dRRJkVEulpI6h6TuHhEcAMWkI2VV5FbQUwvrxmm",
+      "role": "employee"
+    },
+    {
+      "id": 2,
+      "fullName": "John Doe",
+      "email": "john1@example.com",
+      "password": "$2b$10$xpO7FFpKIqyehwRRGP0kyOUuAtnXOmDiY9nHprZj.hkQ2ERZ.kCdW",
       "role": "employee"
     }
   ]
