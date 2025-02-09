@@ -1,55 +1,48 @@
 // shift-service/routes/shiftRoutes.js
 import express from "express";
-import {
-  getAllShifts,
-  getShiftById,
-  createShift,
-  updateShift,
-  deleteShift,
-} from "../controllers/shiftController.js";
+import { createShift, getAllShifts, getShiftById, updateShift, deleteShift } from "../controllers/shiftController.js";
 import { authenticate, authorize } from "../middleware/authMiddleware.js";
+import { body, param } from "express-validator";
 
 const router = express.Router();
 
-// Get all shifts (requires authentication)
+// Protected routes (require JWT authentication)
 router.get("/", authenticate, getAllShifts);
+router.get(
+    "/:id",
+    authenticate,
+    [param("id").isInt().withMessage("Invalid shift ID")],
+    getShiftById
+);
 
-// Get shift by ID (requires authentication)
-router.get("/:id", authenticate, getShiftById);
+// Create a new shift (requires authentication and admin or manager role)
+router.post(
+    "/",
+    authenticate,
+    authorize(["admin", "manager"]),
+    [
+        body("userId").isInt().withMessage("Invalid User ID").notEmpty().withMessage("User ID is required"),
+        body("date").notEmpty().withMessage("Date is required").isISO8601().withMessage("Invalid date format"),
+        body("timeIn").notEmpty().withMessage("Time In is required").isISO8601().withMessage("Invalid time format"),
+        body("timeOut").notEmpty().withMessage("Time Out is required").isISO8601().withMessage("Invalid time format")
+    ],
+    createShift
+);
 
-// Create a new shift (requires authentication and 'admin' role)
-router.post("/", authenticate, authorize(['admin', 'manager']), createShift);
+// Update a shift (requires authentication)
+router.put(
+    "/:id",
+    authenticate,
+    [param("id").isInt().withMessage("Invalid shift ID")],
+    updateShift
+);
 
-// Update shift (requires authentication)
-router.put("/:id", authenticate, updateShift);
-
-// Delete shift (requires authentication and 'admin' role)
-router.delete("/:id", authenticate, authorize(['admin', 'manager']), deleteShift);
+// Delete a shift (requires authentication)
+router.delete(
+    "/:id",
+    authenticate,
+    [param("id").isInt().withMessage("Invalid shift ID")],
+    deleteShift
+);
 
 export default router;
-
-/*
-// shift-service/routes/shiftRoutes.js
-import express from 'express';
-import { getAllShifts, getShiftById, createShift, swapShift } from '../controllers/shiftController.js';
-  import { authenticate } from '../middleware/authMiddleware.js';
-import { body, param } from 'express-validator';
-
-const router = express.Router();
-router.get('/', authenticate, getAllShifts)
-router.get('/:id', authenticate, [
-    param('id').isInt().withMessage('Shift id should be an integer')
-],getShiftById)
-router.post('/', authenticate, [
-  body('userId').notEmpty().withMessage("User id is required"),
-    body('date').notEmpty().withMessage("Date is required"),
-  body('timeIn').notEmpty().withMessage('Time In is required'),
-  body('timeOut').notEmpty().withMessage("Time out is required")
-], createShift);
-router.post('/swap', authenticate,[
-    body('shiftId').notEmpty().withMessage("Shift id is required"),
-    body('newUserId').notEmpty().withMessage("New User Id is Required")
-] ,swapShift);
-
-export default router
-*/

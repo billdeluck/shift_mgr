@@ -6,6 +6,13 @@
       "email": "john@example.com",
       "password": "$2b$10$UiChMXFClZ59cvnwB9pUuufWlbo5w/wZIv8BhMI/7ebrANfTO2FKi",
       "role": "employee"
+    },
+    {
+      "id": 2,
+      "fullName": "John Doe",
+      "email": "john1@example.com",
+      "password": "$2b$10$OWmd8BB4vCNjr6w7GRaruOBug7jfXh/jdDy3lugk596zPWHEQ3faC",
+      "role": "admin"
     }
   ]
 }
