@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import eventRoutes from "./routes/eventRoutes.js";
+import { getDb, loadData, saveData } from "./db.js";
 
 dotenv.config();
 
@@ -13,10 +14,12 @@ app.use(express.json());
 app.use("/api/events", eventRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Event Service is Running!");
+    res.send("Event Service is Running!");
 });
 
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Event Service running on port ${PORT}`);
+    console.log(`✅ Event Service running on port ${PORT}`);
 });
+
+//loadData();

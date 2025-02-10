@@ -7,41 +7,37 @@ const dataFilePath = path.join(__dirname, "data.json");
 let db = { events: [] };
 
 export async function loadData() {
-  try {
-    const data = await fs.readFile(dataFilePath, "utf-8");
-    db = JSON.parse(data);
-    if (!db.events) {
-      db.events = [];
+    try {
+        const data = await fs.readFile(dataFilePath, "utf-8");
+        db = JSON.parse(data);
+        console.log("✅ Event Service data.json loaded.");
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            console.log("⚠️ data.json not found. Creating empty file...");
+            await saveData();
+        } else {
+            console.error("❌ Error reading data.json:", error);
+            throw error;
+        }
     }
-    console.log("✅ data.json loaded. Events:", db.events);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      console.log("⚠️ data.json not found, initializing.");
-      db = { events: [] };
-      await saveData(); // Create the initial file.
-    } else {
-      console.error("❌ Error reading data.json:", error);
-      throw error; // Re-throw to handle at a higher level.
-    }
-  }
 }
 
 export async function saveData() {
-  try {
-    await fs.writeFile(dataFilePath, JSON.stringify(db, null, 2), "utf-8");
-    console.log("✅ data.json saved.");
-  } catch (error) {
-    console.error("❌ Error saving data.json:", error);
-    throw error; // Crucial: Re-throw to handle upstream.
-  }
+    try {
+        await fs.writeFile(dataFilePath, JSON.stringify(db, null, 2), "utf-8");
+        console.log("✅ Event Service data.json saved.");
+    } catch (error) {
+        console.error("❌ Error saving data.json:", error);
+        throw error;
+    }
 }
 
 export function getDb() {
-  return db;
+    return db;
 }
 
 export function setDb(newDb) {
-  db = newDb;
+    db = newDb;
 }
 
-await loadData(); // Load data on startup.
+loadData(); // Load data on startup

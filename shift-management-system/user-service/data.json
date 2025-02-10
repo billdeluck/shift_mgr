@@ -3,15 +3,8 @@
     {
       "id": 1,
       "fullName": "John Doe",
-      "email": "john@example.com",
-      "password": "$2b$10$UiChMXFClZ59cvnwB9pUuufWlbo5w/wZIv8BhMI/7ebrANfTO2FKi",
-      "role": "employee"
-    },
-    {
-      "id": 2,
-      "fullName": "John Doe",
-      "email": "john1@example.com",
-      "password": "$2b$10$OWmd8BB4vCNjr6w7GRaruOBug7jfXh/jdDy3lugk596zPWHEQ3faC",
+      "email": "john@admin.com",
+      "password": "$2b$10$Yk7dVO8C/B296D26BKBw6Ok9ucDNKe3Flmbm/qjk8HDTxNP6GbLou",
       "role": "admin"
     }
   ]
