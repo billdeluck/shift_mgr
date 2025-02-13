@@ -6,7 +6,7 @@ import argparse
 DEFAULT_STRUCTURES = {
     "authentication-service": {"users": []},
     "user-service": {"users": []},
-    "shift-service": {"shifts": []},
+    "shift-service": {"shifts": [], "shiftTypes": []},
     "event-service": {"events": []},
     "notification-service": {"notifications": []},
     "report-service": {"reports": []}

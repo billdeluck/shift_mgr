@@ -1,3 +1,36 @@
 {
-  "events": []
+  "events": [
+    {
+      "id": 1,
+      "type": "SHIFT_CREATED",
+      "userId": 1,
+      "shiftId": 2,
+      "data": {
+        "id": 2,
+        "shiftTypeId": 1,
+        "userId": 1,
+        "date": "2024-07-30",
+        "timeIn": "09:00:00",
+        "timeOut": "17:00:00",
+        "status": "scheduled",
+        "notes": "Test shift"
+      }
+    },
+    {
+      "id": 2,
+      "type": "SHIFT_CREATED",
+      "userId": 1,
+      "shiftId": 4,
+      "data": {
+        "id": 4,
+        "shiftTypeId": 1,
+        "userId": 1,
+        "date": "2024-11-24",
+        "timeIn": "09:00:00",
+        "timeOut": "17:00:00",
+        "status": "scheduled",
+        "notes": "postman test"
+      }
+    }
+  ]
 }

@@ -55,7 +55,7 @@ async function createEvent(eventData, token) {
         console.log("✅ Event created successfully");
         return await response.json(); // Return the created event
     } catch (error) {
-        console.error("❌ Error creating event:", error);
+        console.error(`❌ Error creating event:`, error);
         throw error; // Re-throw to be handled by the controller
     }
 }
@@ -105,7 +105,7 @@ async function sendShiftAssignmentNotification(userId, shift, token) {
         console.log("✅ Email notification sent successfully");
         return await response.json();
     } catch (error) {
-        console.error("❌ Error sending email notification:", error);
+        console.error(`❌ Error sending email notification:`, error);
         throw error; // Re-throw to be handled by the controller
     }
 }
@@ -149,6 +149,7 @@ export const createShift = async (req, res) => {
 
     const { shiftTypeId, userId, date, timeIn, timeOut, status, notes } = req.body;
     const token = req.header("Authorization").split(" ")[1]; // Extract token
+    const shiftDurationDays = 10;
 
     try {
         // Verify user exists
@@ -164,6 +165,11 @@ export const createShift = async (req, res) => {
             status,
             notes
         });
+        // Calculate the return date
+        // Make sure to pass in the correct shiftDurationDays, if you are passing a parameter.
+        const returnDate = await Shift.calculateReturnDate(newShift.id, shiftDurationDays);
+
+        console.log("returnDate", returnDate)
 
         // Send shift assignment notification
         await sendShiftAssignmentNotification(userId, newShift, token);
@@ -323,176 +329,3 @@ export const deleteShiftType = async (req, res) => {
         res.status(500).json({ error: "Failed to delete shift type" });
     }
 };
-
-/*
-// shift-service/controllers/shiftController.js
-import Shift from "../models/Shift.js";
-import { getDb, setDb, saveData } from "../db.js";
-import { validationResult } from "express-validator";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const userServiceUrl = process.env.USER_SERVICE_URL;
-const eventServiceUrl = process.env.EVENT_SERVICE_URL;
-
-// Helper function to fetch user data (to verify user exists)
-async function fetchUserData(userId, token) {
-    try {
-        const response = await fetch(`${userServiceUrl}/api/users/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!response.ok) {
-            const message = await response.text();
-            console.error(`❌ Failed to fetch user data for user ID ${userId}: ${response.status} ${message}`);
-            throw new Error(`Failed to fetch user data: ${response.status} ${message}`);
-        }
-
-        const userData = await response.json();
-        console.log(`✅ User data fetched successfully for user ID ${userId}`);
-        return userData;
-    } catch (error) {
-        console.error(`❌ Error fetching user data for user ID ${userId}:`, error);
-        throw error; // Re-throw to be handled by the controller
-    }
-}
-
-// Helper function to create event (requires event-service)
-async function createEvent(eventData, token) {
-    try {
-        const response = await fetch(`${eventServiceUrl}/api/events`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(eventData)
-        });
-
-        if (!response.ok) {
-            const message = await response.text();
-            console.error(`❌ Failed to create event: ${response.status} ${message}`);
-            throw new Error(`Failed to create event: ${response.status} ${message}`);
-        }
-
-        console.log("✅ Event created successfully");
-        return await response.json(); // Return the created event
-    } catch (error) {
-        console.error("❌ Error creating event:", error);
-        throw error; // Re-throw to be handled by the controller
-    }
-}
-
-// Get all shifts
-export const getAllShifts = async (req, res) => {
-    try {
-        const shifts = await Shift.findAll();
-        console.log("✅ Retrieved all shifts");
-        res.status(200).json(shifts);
-    } catch (error) {
-        console.error("❌ Error fetching shifts:", error);
-        res.status(500).json({ error: "Failed to retrieve shifts" });
-    }
-};
-
-// Get shift by ID
-export const getShiftById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const shift = await Shift.findById(id);
-        if (!shift) {
-            console.warn(`⚠️ Shift with ID ${id} not found`);
-            return res.status(404).json({ error: `Shift with ID ${id} not found` });
-        }
-        console.log(`✅ Retrieved shift with ID ${id}`);
-        res.status(200).json(shift);
-    } catch (error) {
-        console.error("❌ Error fetching shift:", error);
-        res.status(500).json({ error: `Failed to retrieve shift with ID ${id}` });
-    }
-};
-
-// Create a new shift
-export const createShift = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.warn("⚠️ Validation errors:", errors.array());
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { userId, date, timeIn, timeOut, status } = req.body;
-    const token = req.header("Authorization").split(" ")[1]; // Extract token
-
-    try {
-        // Verify user exists
-        await fetchUserData(userId, token);
-
-        // Create the shift
-        const newShift = await Shift.create({
-            userId,
-            date,
-            timeIn,
-            timeOut,
-            status
-        });
-
-        // Create an event
-        await createEvent({
-            type: "SHIFT_CREATED",
-            userId: userId,
-            shiftId: newShift.id,
-            data: newShift
-        }, token);
-
-        console.log(`✅ Shift created successfully with ID ${newShift.id}`);
-        res.status(201).json(newShift);
-    } catch (error) {
-        console.error("❌ Error creating shift:", error);
-        res.status(500).json({ error: "Failed to create shift" });
-    }
-};
-
-// Update an existing shift
-export const updateShift = async (req, res) => {
-    const { id } = req.params;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.warn("⚠️ Validation errors:", errors.array());
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-        const updatedShift = await Shift.update(id, req.body);
-        if (!updatedShift) {
-            console.warn(`⚠️ Shift with ID ${id} not found`);
-            return res.status(404).json({ error: `Shift with ID ${id} not found` });
-        }
-
-        console.log(`✅ Shift with ID ${id} updated successfully`);
-        res.status(200).json(updatedShift);
-    } catch (error) {
-        console.error("❌ Error updating shift:", error);
-        res.status(500).json({ error: "Failed to update shift" });
-    }
-};
-
-// Delete a shift
-export const deleteShift = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const success = await Shift.delete(id);
-        if (!success) {
-            console.warn(`⚠️ Shift with ID ${id} not found`);
-            return res.status(404).json({ error: `Shift with ID ${id} not found` });
-        }
-
-        console.log(`✅ Shift with ID ${id} deleted successfully`);
-        res.status(200).json({ message: "Shift deleted successfully" });
-    } catch (error) {
-        console.error("❌ Error deleting shift:", error);
-        res.status(500).json({ error: "Failed to delete shift" });
-    }
-};*/

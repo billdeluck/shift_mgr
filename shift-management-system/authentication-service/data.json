@@ -4,7 +4,7 @@
       "id": 1,
       "fullName": "John Doe",
       "email": "john@admin.com",
-      "password": "$2b$10$Yk7dVO8C/B296D26BKBw6Ok9ucDNKe3Flmbm/qjk8HDTxNP6GbLou",
+      "password": "$2b$10$YCc/wjCmGwUuBsew0TURLOviIWGsajCgQHUWFoU9qKzaIfEYW8tXq",
       "role": "admin"
     }
   ]

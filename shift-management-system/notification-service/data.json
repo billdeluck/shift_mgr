@@ -1,3 +1,20 @@
 {
-  "notifications": []
+  "notifications": [
+    {
+      "id": 1,
+      "message": "You have been assigned to a Morning shift on 2024-07-30 from 09:00:00 to 17:00:00.",
+      "userId": 1,
+      "type": "email",
+      "status": "pending",
+      "sentAt": "2025-02-13T19:29:32.946Z"
+    },
+    {
+      "id": 2,
+      "message": "You have been assigned to a Morning shift on 2024-11-24 from 09:00:00 to 17:00:00.",
+      "userId": 1,
+      "type": "email",
+      "status": "pending",
+      "sentAt": "2025-02-13T22:28:00.515Z"
+    }
+  ]
 }

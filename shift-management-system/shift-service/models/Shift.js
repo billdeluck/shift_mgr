@@ -1,5 +1,6 @@
 // shift-service/models/Shift.js
 import { getDb, setDb, saveData } from "../db.js";
+import ShiftType from "./ShiftType.js"; // Import ShiftType model
 
 class Shift {
     constructor(id, shiftTypeId, userId, date, timeIn, timeOut, status = "scheduled", notes = null) {
@@ -15,6 +16,7 @@ class Shift {
 
     static async create(shiftData) {
         const db = getDb();
+        console.log("Current DB state before shift creation:", JSON.stringify(db));
         const shifts = db.shifts || [];
 
         // Validate shift data
@@ -33,132 +35,59 @@ class Shift {
             shiftData.notes || null
         );
 
-        shifts.push(newShift);
-        setDb({ shifts });
+        console.log("New shift created:", JSON.stringify(newShift));
+        shifts.push(newShift); // Push the new shift to the local array
+        db.shifts = shifts; // Update the db object with new value
+        setDb(db);
+        console.log("DB state after push:", JSON.stringify(db));  // Add this line
         await saveData();
+        console.log("DB state after save:", JSON.stringify(db));  // Add this line
         console.log(`✅ Created a new shift for user ID ${shiftData.userId}`);
         return newShift;
     }
-
-    static async findAll() {
-        const shifts = getDb().shifts || [];
-        console.log(`✅ Retrieved all shifts: ${shifts.length} shifts found`);
-        return shifts;
-    }
-
-    static async findById(id) {
-        const shifts = getDb().shifts || [];
-        const shift = shifts.find((shift) => shift.id === parseInt(id));
-        if (shift) {
-            console.log(`✅ Found shift with ID ${id}`);
-            return shift;
-        } else {
-            console.warn(`⚠️ Shift with ID ${id} not found`);
-            return null;
-        }
-    }
-
-    static async update(id, updatedData) {
-        const db = getDb();
-        const index = db.shifts.findIndex((shift) => shift.id === parseInt(id));
-
-        if (index === -1) {
-            console.warn(`⚠️ Shift with ID ${id} not found for update`);
-            return null;
-        }
-
-        db.shifts[index] = { ...db.shifts[index], ...updatedData };
-        setDb(db);
-        await saveData();
-        console.log(`✅ Updated shift with ID ${id}`);
-        return db.shifts[index];
-    }
-
-    static async delete(id) {
-        const db = getDb();
-        const index = db.shifts.findIndex((shift) => shift.id === parseInt(id));
-
-        if (index === -1) {
-            console.warn(`⚠️ Shift with ID ${id} not found for deletion`);
-            return false;
-        }
-
-        db.shifts.splice(index, 1);
-        setDb(db);
-        await saveData();
-        console.log(`✅ Deleted shift with ID ${id}`);
-        return true;
-    }
-}
-
-export default Shift;
-
-/*
-// shift-service/models/Shift.js
-import { getDb, setDb, saveData } from "../db.js";
-
-class Shift {
-    constructor(id, userId, date, timeIn, timeOut, status = "scheduled") {
-        this.id = id;
-        this.userId = userId;
-        this.date = date;
-        this.timeIn = timeIn;
-        this.timeOut = timeOut;
-        this.status = status;
-    }
-
-    static async create(shiftData) {
+    static async calculateReturnDate(shiftId, shiftDurationDays = 10) {
         const db = getDb();
         const shifts = db.shifts || [];
 
-        // Validate shift data
-        if (!shiftData.userId || !shiftData.date || !shiftData.timeIn || !shiftData.timeOut || !shiftData.status) {
-            throw new Error("Missing required shift data");
+        const shift = shifts.find(shift => shift.id === parseInt(shiftId));
+
+        if (!shift) {
+            console.warn(`⚠️ Shift with ID ${shiftId} not found for calculating return date`);
+            return null;
+        }
+        // Fetch the shift type to get the off-days
+        const shiftType = await ShiftType.findById(shift.shiftTypeId);
+        if (!shiftType) {
+            console.warn(`⚠️ Shift type with ID ${shift.shiftTypeId} not found for calculating return date`);
+            return null;
         }
 
-        // Check for shift overlap
-        const existingOverlap = shifts.some((shift) => {
-            const newShiftDate = new Date(shiftData.date);
-            const existingShiftDate = new Date(shift.date);
+        const offDays = shiftType.offDays;
 
-            return (
-                newShiftDate.getTime() === existingShiftDate.getTime() &&
-                shift.userId === shiftData.userId &&
-                (
-                    (new Date(shiftData.timeIn).getTime() >= new Date(shift.timeIn).getTime() && new Date(shiftData.timeIn).getTime() < new Date(shift.timeOut).getTime()) ||
-                    (new Date(shiftData.timeOut).getTime() > new Date(shift.timeIn).getTime() && new Date(shiftData.timeOut).getTime() <= new Date(shift.timeOut).getTime())
-                )
-            );
-        });
+        // Calculate the shift end date
+        const startDate = new Date(shift.date);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + shiftDurationDays);
 
-        if (existingOverlap) {
-            throw new Error("Shift overlaps with an existing shift for this user.");
-        }
+        // Calculate the return date
+        const returnDate = new Date(endDate);
+        returnDate.setDate(endDate.getDate() + offDays);
 
-        const newShift = new Shift(
-            shifts.length ? Math.max(...shifts.map((s) => s.id)) + 1 : 1,
-            shiftData.userId,
-            shiftData.date,
-            shiftData.timeIn,
-            shiftData.timeOut,
-            shiftData.status
-        );
+        console.log(`✅ Calculated return date for shift ID ${shiftId}: ${returnDate}`);
+        return returnDate;
 
-        shifts.push(newShift);
-        setDb({ shifts });
-        await saveData();
-        console.log(`✅ Created a new shift for user ID ${shiftData.userId}`);
-        return newShift;
     }
 
     static async findAll() {
-        const shifts = getDb().shifts || [];
-        console.log(`✅ Retrieved all shifts: ${shifts.length} shifts found`);
-        return shifts;
+        const db = getDb();
+        const shift = db.shifts || [];
+        console.log(`✅ Retrieved all shift: ${shift.length} shift found`);
+        return shift;
     }
 
     static async findById(id) {
-        const shifts = getDb().shifts || [];
+        const db = getDb();
+        const shifts = db.shifts || [];
         const shift = shifts.find((shift) => shift.id === parseInt(id));
         if (shift) {
             console.log(`✅ Found shift with ID ${id}`);
@@ -171,30 +100,35 @@ class Shift {
 
     static async update(id, updatedData) {
         const db = getDb();
-        const index = db.shifts.findIndex((shift) => shift.id === parseInt(id));
+        const shifts = db.shifts || [];
+        const index = shifts.findIndex((shift) => shift.id === parseInt(id));
 
         if (index === -1) {
             console.warn(`⚠️ Shift with ID ${id} not found for update`);
             return null;
         }
 
-        db.shifts[index] = { ...db.shifts[index], ...updatedData };
+        // Update the shift type properties
+        shifts[index] = { ...shifts[index], ...updatedData };
+        db.shifts = shifts; // Update the db object with new value
         setDb(db);
         await saveData();
         console.log(`✅ Updated shift with ID ${id}`);
-        return db.shifts[index];
+        return shifts[index];
     }
 
     static async delete(id) {
         const db = getDb();
-        const index = db.shifts.findIndex((shift) => shift.id === parseInt(id));
+        const shifts = db.shifts || [];
+        const index = shifts.findIndex((shift) => shift.id === parseInt(id));
 
         if (index === -1) {
             console.warn(`⚠️ Shift with ID ${id} not found for deletion`);
             return false;
         }
 
-        db.shifts.splice(index, 1);
+        shifts.splice(index, 1);
+        db.shifts = shifts; // Update the db object with new value
         setDb(db);
         await saveData();
         console.log(`✅ Deleted shift with ID ${id}`);
@@ -203,4 +137,3 @@ class Shift {
 }
 
 export default Shift;
-*/

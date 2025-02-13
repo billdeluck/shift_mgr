@@ -1,7 +1,7 @@
 {
   "shifts": [
     {
-      "id": 1,
+      "id": 2,
       "shiftTypeId": 1,
       "userId": 1,
       "date": "2024-07-30",
@@ -11,14 +11,32 @@
       "notes": "Test shift"
     },
     {
-      "id": 2,
+      "id": 3,
       "shiftTypeId": 1,
       "userId": 1,
-      "date": "2024-07-30",
+      "date": "2024-11-24",
       "timeIn": "09:00:00",
       "timeOut": "17:00:00",
       "status": "scheduled",
-      "notes": "Test shift"
+      "notes": "postman test"
+    },
+    {
+      "id": 4,
+      "shiftTypeId": 1,
+      "userId": 1,
+      "date": "2024-11-24",
+      "timeIn": "09:00:00",
+      "timeOut": "17:00:00",
+      "status": "scheduled",
+      "notes": "postman test"
+    }
+  ],
+  "shiftTypes": [
+    {
+      "id": 1,
+      "name": "Morning",
+      "category": "Day Shift",
+      "offDays": 3
     }
   ]
 }
