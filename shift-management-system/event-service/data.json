@@ -4,9 +4,9 @@
       "id": 1,
       "type": "SHIFT_CREATED",
       "userId": 1,
-      "shiftId": 2,
+      "shiftId": 1,
       "data": {
-        "id": 2,
+        "id": 1,
         "shiftTypeId": 1,
         "userId": 1,
         "date": "2024-07-30",
@@ -20,16 +20,48 @@
       "id": 2,
       "type": "SHIFT_CREATED",
       "userId": 1,
-      "shiftId": 4,
+      "shiftId": 2,
       "data": {
-        "id": 4,
+        "id": 2,
         "shiftTypeId": 1,
         "userId": 1,
-        "date": "2024-11-24",
-        "timeIn": "09:00:00",
-        "timeOut": "17:00:00",
+        "date": "2025-02-14",
+        "timeIn": "06:00:00",
+        "timeOut": "17:40:00",
         "status": "scheduled",
-        "notes": "postman test"
+        "notes": "Test shift"
+      }
+    },
+    {
+      "id": 3,
+      "type": "SHIFT_CREATED",
+      "userId": 1,
+      "shiftId": 3,
+      "data": {
+        "id": 3,
+        "shiftTypeId": 2,
+        "userId": 1,
+        "date": "2025-02-14",
+        "timeIn": "06:00:00",
+        "timeOut": "17:40:00",
+        "status": "scheduled",
+        "notes": "Test shift"
+      }
+    },
+    {
+      "id": 4,
+      "type": "SHIFT_CREATED",
+      "userId": 1,
+      "shiftId": 3,
+      "data": {
+        "id": 3,
+        "shiftTypeId": 2,
+        "userId": 1,
+        "date": "2025-02-14",
+        "timeIn": "17:20:00",
+        "timeOut": "06:40:00",
+        "status": "scheduled",
+        "notes": "Test shift"
       }
     }
   ]

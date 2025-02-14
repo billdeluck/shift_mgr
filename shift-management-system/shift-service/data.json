@@ -1,7 +1,7 @@
 {
   "shifts": [
     {
-      "id": 2,
+      "id": 1,
       "shiftTypeId": 1,
       "userId": 1,
       "date": "2024-07-30",
@@ -11,24 +11,24 @@
       "notes": "Test shift"
     },
     {
-      "id": 3,
+      "id": 2,
       "shiftTypeId": 1,
       "userId": 1,
-      "date": "2024-11-24",
-      "timeIn": "09:00:00",
-      "timeOut": "17:00:00",
+      "date": "2025-02-14",
+      "timeIn": "06:00:00",
+      "timeOut": "17:40:00",
       "status": "scheduled",
-      "notes": "postman test"
+      "notes": "Test shift"
     },
     {
-      "id": 4,
-      "shiftTypeId": 1,
+      "id": 3,
+      "shiftTypeId": 2,
       "userId": 1,
-      "date": "2024-11-24",
-      "timeIn": "09:00:00",
-      "timeOut": "17:00:00",
+      "date": "2025-02-14",
+      "timeIn": "17:20:00",
+      "timeOut": "06:40:00",
       "status": "scheduled",
-      "notes": "postman test"
+      "notes": "Test shift"
     }
   ],
   "shiftTypes": [
@@ -36,7 +36,13 @@
       "id": 1,
       "name": "Morning",
       "category": "Day Shift",
-      "offDays": 3
+      "offDays": 1
+    },
+    {
+      "id": 2,
+      "name": "Night",
+      "category": "Night Shift",
+      "offDays": 1
     }
   ]
 }
